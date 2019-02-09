@@ -6,7 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import UTAParking.Model.User;
 /**
  * Servlet implementation class registerController
  */
@@ -35,6 +35,8 @@ public class registerController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		User registerform = new User();
+		
 		doGet(request, response);
 	}
 

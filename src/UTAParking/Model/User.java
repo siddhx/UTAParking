@@ -1,6 +1,6 @@
 package UTAParking.Model;
 
-public class registerForm {
+public class User {
 	private String username="";
 	private String password="";
 	private String last_name="";

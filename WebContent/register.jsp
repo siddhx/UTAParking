@@ -11,7 +11,7 @@
 <tr>
 <td>
 <form name="greetingForm" action="registerController" method="post" style="width: 300px; ">
-<table>
+<!-- <table> -->
 <tr>
 <td>Please enter your name</td>
 </tr>
