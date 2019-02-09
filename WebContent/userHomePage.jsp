@@ -22,7 +22,7 @@
           <li><a href="/UTAParking/User?action=updateProfile"  target="_top"><span>Update Profile</span></a></li>
           
           <li><a href="formUpdateProfile.jsp"  target="_top"><span>Request Reservation</span></a></li>  
-           <li><a href="formSearchUser.jsp"  target="_top"><span>View Reservations</span></a></li>  
+           <li><a href="formSearchUser.jsp"  target="_top"><span>View My Reservations</span></a></li>  
           <li><a href="formSearchParkingSpot.jsp"  target="_top"><span>Search Parking Spot</span></a></li>  
           <li><a href="formViewNoShow.jsp"  target="_top"><span>View No-show/Violations</span></a></li>  
           </ul>
