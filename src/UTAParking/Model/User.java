@@ -115,6 +115,19 @@ public class User {
 	
 //	Validations
 	
+	public void validateUser (User user, UserErrorMsgs errorMsgs) {
+		
+		errorMsgs.setFirstNameError(validateFirstName(user.getFirst_name()));
+		errorMsgs.setLastNameError(validateLastName(user.getLast_name()));
+		errorMsgs.setUsernameError(validateUsername(user.getUsername()));
+		errorMsgs.setPasswordError(validatePassword(user.getPassword()));
+		errorMsgs.setEmailError(validateEmail(user.getEmail()));
+//		errorMsgs.setUtaIdError(validateUtaId(user.getUtaId()));
+//		errorMsgs.setAgeError(validateAge(user.getAgeAsString()));
+
+		errorMsgs.setErrorMsg();
+	}
+	
 	public String validateFirstName (String first_name)
 	{
 		String result="";
@@ -156,18 +169,38 @@ public class User {
 		return result;				
 	}
 	
-	public void validateUser (User user, UserErrorMsgs errorMsgs) {
-		
-		errorMsgs.setFirstNameError(validateFirstName(user.getFirst_name()));
-		errorMsgs.setLastNameError(validateLastName(user.getLast_name()));
-		errorMsgs.setUsernameError(validateUsername(user.getUsername()));
-//		errorMsgs.setPasswordError(validatePassword(user.getPassword()));
-//		errorMsgs.setEmailError(validateEmail(user.getEmail()));
-//		errorMsgs.setUtaIdError(validateUtaId(user.getUtaId()));
-//		errorMsgs.setAgeError(validateAge(user.getAgeAsString()));
-
-		errorMsgs.setErrorMsg();
-	}	
+	private String validatePassword(String password) {
+		password = password.trim();
+		String result="";
+		if (!stringSize(password,8,15))
+			result= "Your password must between 8 and 15 characters";
+		else 
+			if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@._#$%^&+=]).{8,}$"))
+				result= "Your password must contain at least 1 upper case letter, at least 1 lower case letter and at least 1 special character(@#$%^&+=._)";
+				
+		//explanation of regex:
+		/*      ^                 # start-of-string
+				(?=.*[0-9])       # a digit must occur at least once
+				(?=.*[a-z])       # a lower case letter must occur at least once
+				(?=.*[A-Z])       # an upper case letter must occur at least once
+				(?=.*[@#$%^&+=])  # a special character must occur at least once
+				.{8,}             # anything, at least eight places though
+				$                 # end-of-string/
+		*/
+		return result;
+	}
+	
+	private String validateEmail(String email) {
+		email = email.trim();
+		String result="";
+		if (!stringSize(email,8,45))
+			result= "Your email must between 8 and 45 characters";
+		else 
+		   if(!email.matches("^[a-zA-Z0-9]+@[a-zA-Z0-9]+(.com|.gov|.net|.org|.edu|.mil)$"))
+			 result= "Your email must contain @ and any one of the following extensions {.com,.gov,.net,.org,.edu,.mil}"; 
+			  
+		return result;
+	}
 	
 //	helper functions
 	private boolean stringSize(String string, int min, int max) {
