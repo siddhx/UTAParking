@@ -35,7 +35,7 @@ public class registerController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		User registerform = new User();
+		User user = new User();
 		
 		doGet(request, response);
 	}

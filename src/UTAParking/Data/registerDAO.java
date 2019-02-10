@@ -1,4 +1,4 @@
-package Data;
+package UTAParking.Data;
 
 public class registerDAO {
 
