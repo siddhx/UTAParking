@@ -122,7 +122,7 @@ public class User {
 		errorMsgs.setUsernameError(validateUsername(user.getUsername()));
 		errorMsgs.setPasswordError(validatePassword(user.getPassword()));
 		errorMsgs.setEmailError(validateEmail(user.getEmail()));
-//		errorMsgs.setUtaIdError(validateUtaId(user.getUtaId()));
+		errorMsgs.setUtaIdError(validateUtaId(user.getUTA_Id()));
 //		errorMsgs.setAgeError(validateAge(user.getAgeAsString()));
 
 		errorMsgs.setErrorMsg();
@@ -199,6 +199,17 @@ public class User {
 		   if(!email.matches("^[a-zA-Z0-9]+@[a-zA-Z0-9]+(.com|.gov|.net|.org|.edu|.mil)$"))
 			 result= "Your email must contain @ and any one of the following extensions {.com,.gov,.net,.org,.edu,.mil}"; 
 			  
+		return result;
+	}
+	
+	private String validateUtaId(String getUTA_Id) {
+		getUTA_Id = getUTA_Id.trim();
+		String result="";
+		if (getUTA_Id.length()!=10)
+			result= "Your UTA ID must be exactly 10 digits long";
+		else
+			if (!isTextAnInteger(getUTA_Id))
+				result="Your UTA ID must be a number";
 		return result;
 	}
 	
