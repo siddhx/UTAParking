@@ -12,6 +12,41 @@ public class UserDAO
 {
 	static SQLConnection DBMgr = SQLConnection.getInstance();
 	
+	public static void registerUser(User user) {
+		Statement stmt = null;   
+		Connection conn = SQLConnection.getDBConnection();  
+		String registerUser = "INSERT INTO USER (username,password,last_name,first_name,role,UTA_Id,phone,email,street_address,city,state,zipcode,Parking_Permit_Type) ";					
+		registerUser += " VALUES ('"  
+									+ user.getUsername() + "','"
+									+ user.getPassword() + "','"
+									+ user.getLast_name() + "','"
+									+ user.getFirst_name() + "','"
+									+ user.getRole() + "','"
+									+ user.getUTA_Id() + "','"
+									+ user.getPhone() + "','"
+									+ user.getEmail() + "','"
+									+ user.getStreet_address() + "','"
+									+ user.getCity() + "','"
+									+ user.getState() + "','"
+									+ user.getZipcode() + "','"
+									+ user.getParking_Permit_Type() + ")" ;
+		try {   
+			conn = SQLConnection.getDBConnection();  
+			conn.setAutoCommit(false);   
+			stmt = conn.createStatement();
+			stmt.executeUpdate(registerUser);
+			conn.commit();					 
+		} catch (SQLException sqle) { 
+			sqle.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			};
+		}
+	}	
 	
 	public static ArrayList<User> listUsers(String lastName) {  
 		Statement stmt = null;   

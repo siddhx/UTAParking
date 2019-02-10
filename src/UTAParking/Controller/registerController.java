@@ -6,7 +6,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import UTAParking.Data.UserDAO;
 import UTAParking.Model.User;
+import UTAParking.Model.UserErrorMsgs;
 /**
  * Servlet implementation class registerController
  */
@@ -34,10 +38,31 @@ public class registerController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		User user = new User();
+		HttpSession session = request.getSession();		
 		
-		doGet(request, response);
+		String url = "/register.jsp";
+		
+		User user = new User();
+		user.setUser(request.getParameter("first_name"), request.getParameter("last_name"), 
+				request.getParameter("username"), request.getParameter("password"), 
+				request.getParameter("email"), request.getParameter("UTA_Id"), 
+				request.getParameter("phone"), request.getParameter("street_address"),
+				request.getParameter("role"), request.getParameter("city"),
+				request.getParameter("state"),request.getParameter("zipcode"),
+				request.getParameter("Parking_Permit_Type"));
+				
+		UserErrorMsgs UerrorMsgs = new UserErrorMsgs();
+		user.validateUser(user, UerrorMsgs);
+		session.setAttribute("User",user);
+		session.setAttribute("errorMsgs",UerrorMsgs);
+		
+		if (UerrorMsgs.getErrorMsg().equals("")) {
+			UserDAO.registerUser(user); //save employee if no errors
+			session.removeAttribute("User");
+			url = "/login.jsp"; //if successful, redirect to login page
+		}
+		
+		getServletContext().getRequestDispatcher(url).forward(request, response);		
 	}
 
 }
