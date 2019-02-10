@@ -1,4 +1,5 @@
 package UTAParking.Model;
+import UTAParking.Data.UserDAO;
 
 public class User {
 	private String username="";
@@ -14,6 +15,24 @@ public class User {
 	private String state="";
 	private String zipcode="";
 	private String Parking_Permit_Type="";
+	
+	public void setUser(String username, String password, String last_name, String first_name, String role, String UTA_Id, 
+			String phone, String email, String street_address, String city, String state, String zipcode, String Parking_Permit_Type)
+	{
+		this.username = username;
+		this.password = password;
+		this.last_name = last_name;
+		this.first_name = first_name;
+		this.role = role;
+		this.UTA_Id = UTA_Id;
+		this.phone = phone;
+		this.email = email;
+		this.street_address = street_address;
+		this.city = city;
+		this.state = state;
+		this.zipcode = zipcode;
+		this.Parking_Permit_Type = Parking_Permit_Type;
+	}
 	
 	public String getUsername() {
 		return username;
@@ -94,6 +113,78 @@ public class User {
 		Parking_Permit_Type = parking_Permit_Type;
 	}
 	
+//	Validations
 	
+	public String validateFirstName (String first_name)
+	{
+		String result="";
+		first_name = first_name.trim(); //trim out trailing and leading spaces
+		
+		if (!stringSize(first_name,3,50))
+			result= "Your First Name must between 3 and 50 characters";
+		else
+			if (!first_name.matches("^[a-zA-Z]+$"))
+				result="Your First Name must only contain alphabets";
+		
+		return result;
+	}
+	
+	private String validateLastName(String last_name) {
+		String result="";
+	last_name = last_name.trim(); //trim out trailing and leading spaces
+	
+	if (!stringSize(last_name,3,50))
+		result= "Your Last Name must between 3 and 50 characters";
+	else
+		if (!last_name.matches("^[a-zA-Z]+$"))
+			result="Your Last Name must only contain alphabets";
+
+		return result;
+	}
+	
+	private String validateUsername(String username) {
+		username = username.trim();
+		String result="";
+		if (!stringSize(username,3,15))
+			result= "Your username must between 3 and 15 digits";
+		else
+			if (!username.matches("^[a-zA-Z0-9]+$"))
+				result="Your username must only contain alphabets and numbers";
+			else
+				if (!UserDAO.isUnique(username))
+					result="username already in database";
+		return result;				
+	}
+	
+	public void validateUser (User user, UserErrorMsgs errorMsgs) {
+		
+		errorMsgs.setFirstNameError(validateFirstName(user.getFirst_name()));
+		errorMsgs.setLastNameError(validateLastName(user.getLast_name()));
+		errorMsgs.setUsernameError(validateUsername(user.getUsername()));
+//		errorMsgs.setPasswordError(validatePassword(user.getPassword()));
+//		errorMsgs.setEmailError(validateEmail(user.getEmail()));
+//		errorMsgs.setUtaIdError(validateUtaId(user.getUtaId()));
+//		errorMsgs.setAgeError(validateAge(user.getAgeAsString()));
+
+		errorMsgs.setErrorMsg();
+	}	
+	
+//	helper functions
+	private boolean stringSize(String string, int min, int max) {
+		return string.length()>=min && string.length()<=max;
+	}
+	private boolean isTextAnInteger(String string) {
+        boolean result;
+		try
+        {
+            Long.parseLong(string);
+            result=true;
+        } 
+        catch (NumberFormatException e) 
+        {
+            result=false;
+        }
+		return result;
+	}	
 	
 }

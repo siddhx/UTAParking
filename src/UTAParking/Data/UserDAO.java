@@ -1,11 +1,12 @@
-package UTAParking.data;
+package UTAParking.Data;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+//import java.sql.SQLConnection;
 import java.sql.Statement;
 import java.util.ArrayList;
-import UTAParking.model.*;
-import UTAParking.util.*;
+import UTAParking.Model.*;
+import UTAParking.Util.*;
 
 public class UserDAO 
 {
@@ -51,4 +52,31 @@ public class UserDAO
 			}};
 		return null;
 	}
+	
+	//if username exists in DB
+	public static boolean isUnique(String username) {  
+		Statement stmt = null;   
+		Connection conn = null;  
+		try {   
+			conn = SQLConnection.getDBConnection();  
+			stmt = conn.createStatement();
+			String searchUsername = " SELECT * from USER WHERE USERNAME = '"+username+"'";
+			ResultSet userList = stmt.executeQuery(searchUsername);
+			ArrayList<User> userListInDB = new ArrayList<User>();
+			while (userList.next()) {
+				User user = new User(); 
+				userListInDB.add(user);	 
+			} 
+			return (userListInDB.isEmpty());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}};
+		return false;
+	}	
 }
