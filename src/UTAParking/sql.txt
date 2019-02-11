@@ -1,0 +1,38 @@
+DROP DATABASE IF EXISTS `arlington_parking` ;
+CREATE DATABASE  IF NOT EXISTS `arlington_parking` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `arlington_parking`;
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user` (
+   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `utaid` char(10) COLLATE utf8_bin NOT NULL,
+  `username` varchar(15) COLLATE utf8_bin NOT NULL,
+  `first_name` varchar(50) COLLATE utf8_bin NOT NULL,
+  `last_name` varchar(50) COLLATE utf8_bin NOT NULL,
+  `password` varchar(15) COLLATE utf8_bin NOT NULL,
+  `email` varchar(45) COLLATE utf8_bin NOT NULL,
+  `phone` varchar(10) COLLATE utf8_bin NOT NULL,
+  `role` varchar(15) COLLATE utf8_bin NOT NULL DEFAULT 'customer',
+  `state` varchar(20) COLLATE utf8_bin NOT NULL,
+  `address` varchar(50) COLLATE utf8_bin NOT NULL,
+  `zipcode` varchar(5) COLLATE utf8_bin NOT NULL,
+  `parkingpermitype` varchar(20) COLLATE utf8_bin NOT NULL,
+  `city` varchar(20) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE user AUTO_INCREMENT=1;
+DROP TABLE IF EXISTS `parking`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parking` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `parkingtype` varchar(20) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE parking AUTO_INCREMENT=1;
