@@ -36,3 +36,40 @@ CREATE TABLE `parking` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ALTER TABLE parking AUTO_INCREMENT=1;
+DROP TABLE IF EXISTS `payment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `payment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `name_on_card` varchar(50) COLLATE utf8_bin DEFAULT NULL COMMENT 'Allow null, if null then the name on card is user.first + ‘ ‘ +user.last, therefore on web page add check box “use same name as person making reservation”',
+  `card_number` char(16) COLLATE utf8_bin NOT NULL,
+  `card_expires` date NOT NULL,
+  `card_security_code` char(3) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE payment AUTO_INCREMENT=1;
+DROP TABLE IF EXISTS `reservation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `reservation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `car_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `hasgps` tinyint(1) NOT NULL DEFAULT '0',
+  `hasonstar` tinyint(1) NOT NULL DEFAULT '0',
+  `hassirius` tinyint(1) NOT NULL DEFAULT '0',
+  `iscanceled` tinyint(1) NOT NULL DEFAULT '0',
+  `isdeleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `fk_car_idx` (`car_id`),
+  KEY `fk_payment_idx` (`payment_id`),
+  CONSTRAINT `fk_car` FOREIGN KEY (`car_id`) REFERENCES `car` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE reservation AUTO_INCREMENT=1;
