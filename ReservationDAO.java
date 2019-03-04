@@ -1,134 +1,123 @@
-package arlington_parking_app.data;
-
+package UTAParking.data;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+//import java.sql.SQLConnection;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-import arlington_parking_app.model.Reservation;
-import arlington_parking_app.model.ReservationDetails;
-import arlington_parking_app.util.SQLConnection;
+import UTAParking.model.*;
+import UTAParking.util.SQLConnection;
 
-public class ReservationDAO { 
-	 
-	static SQLConnection DBMgr = SQLConnection.getInstance(); 
-	
-	//insert new reservation and return auto-gen PK
-	public static int insertReservation(Reservation reservation) {
-		Statement stmt = null;   
-		Connection conn = SQLConnection.getDBConnection();  
-		String query = "INSERT INTO RESERVATION (car_id,payment_id,start_time,end_time,hasgps,hasonstar,hassirius,iscanceled,isdeleted,total_price) ";					
-		query += " VALUES ("  
-				+ reservation.getCarId() + ","
-				+ reservation.getPaymentId() + ",'"		
-				+ reservation.getStartTimeAsString() + "','"
-				+ reservation.getEndTimeAsString() + "'," 
-				+ reservation.getHasGps() + ","
-				+ reservation.getHasOnstar() + ","
-				+ reservation.getHasSirius() + ","
-				+ reservation.getIsCanceled() + ","
-				+ reservation.getIsDeleted() + ","
-				+ reservation.getTotalPrice() + ")" ;
-		PreparedStatement pstmt;
-		int key = 0;
-		try {
-			conn = SQLConnection.getDBConnection();  
-			conn.setAutoCommit(false);  
-			pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);			  
-			pstmt.executeUpdate();
-			ResultSet keys = pstmt.getGeneratedKeys();		 
-			keys.next();
-			key = keys.getInt(1);
-			keys.close();
-			pstmt.close();
-			conn.commit();	
-			conn.close();
-		} 
-		catch (Exception e) { 
-				e.printStackTrace(); 
+public class ReservationDAO {
+
+	static SQLConnection DBMgr = SQLConnection.getInstance();
+	/*
+	 * This function returns the permit type of a given user
+	 */
+	public static String getPermitType(String username)
+	{
+		Statement stmt = null;
+		Connection conn= null;
+		String ParkingPermitType="";
+		try
+		{
+			 conn = SQLConnection.getDBConnection();
+			 stmt =conn.createStatement();
+			  String getPermitTypeQuery = "SELECT parkingpermittype from USER WHERE USERNAME= '"+username+"'";
+			  ResultSet rs = stmt.executeQuery(getPermitTypeQuery);
+			  while(rs.next())
+			  {
+				  ParkingPermitType = rs.getString("parkingpermittype");
+			  }
+			 
 		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		
 		finally {
 			try {
 				conn.close();
+				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-         }
-		return key;
-}
-	
-	//manager view all RRs
-	public static ArrayList<ReservationDetails> getAllReservations() {
-		String query = " SELECT reservation.id as id,username,car.name as name,capacity,start_time,end_time,hassirius,hasgps,hasonstar,total_price"
-				+ " FROM reservation,user,car,payment"
-				+ " WHERE payment.id=reservation.payment_id AND payment.user_id=user.id AND car.id=reservation.car_id" 
-				+ " AND iscanceled!=1 AND isdeleted !=1 ORDER BY start_time DESC";
-		return getReservations(query);
+			}};
+		return  ParkingPermitType;
 	}
 	
-	//manager filter RRs
-    public static ArrayList<ReservationDetails> getAllReservationsByDate(String searchStart, String searchEnd) {
-    	String query = " SELECT reservation.id as id,username,car.name as name,capacity,start_time,end_time,hassirius,hasgps,hasonstar,total_price"
-				+ " FROM reservation,user,car,payment"
-				+ " WHERE payment.id=reservation.payment_id AND payment.user_id=user.id AND car.id=reservation.car_id" 
-				+ " AND iscanceled!=1 AND isdeleted !=1 AND start_time <= '"+searchEnd+"' and '"+searchStart+"' <= end_time"
-				+ " ORDER BY start_time DESC";
-    	
-		return getReservations(query);
-	}
-	
-	//customer view my RRs
-	public static ArrayList<ReservationDetails> getAllMyReservations(int userID) {
-		String query = " SELECT reservation.id as id,username,car.name as name,capacity,start_time,end_time,hassirius,hasgps,hasonstar,total_price"
-				+ " FROM reservation,user,car,payment"
-				+ " WHERE payment.id=reservation.payment_id AND payment.user_id=user.id AND car.id=reservation.car_id" 
-				+ " AND iscanceled!=1 AND isdeleted !=1 AND user.id="+userID+" ORDER BY start_time DESC";
-		return getReservations(query);
-	}
-	
-	//customer filter my RRs
-    public static ArrayList<ReservationDetails> getAllMyReservationsByDate(int userID, String searchStart, String searchEnd) {
-    	
-    	String query = " SELECT reservation.id as id,username,car.name as name,capacity,start_time,end_time,hassirius,hasgps,hasonstar,total_price"
-				+ " FROM reservation,user,car,payment"
-				+ " WHERE payment.id=reservation.payment_id AND payment.user_id=user.id AND car.id=reservation.car_id" 
-				+ " AND iscanceled!=1 AND isdeleted !=1  AND user.id="+userID+" AND start_time <= '"+searchEnd+"' and '"+searchStart+"' <= end_time"
-				+ " ORDER BY start_time DESC";
-    	
-		return getReservations(query);
-	}
-	
-	//retrieve list of RRs from DB
-	private static ArrayList<ReservationDetails> getReservations(String query) {
+	public static List<Reservation> getParkingArea(String permitType) throws SQLException
+	{
+		Statement stmt = null;
+		Connection conn= null;
+		List<Reservation> listPermitType = new ArrayList<Reservation>();
+		try
+		{
+			 conn = SQLConnection.getDBConnection();
+			 stmt =conn.createStatement();
+			  String getPermitTypeQuery = "SELECT parkingarea_name from PARKING WHERE parkingtype= '"+permitType+"'";
+			  ResultSet rs = stmt.executeQuery(getPermitTypeQuery);
+			  while(rs.next())
+			  {
+				  Reservation reserveObj = new Reservation();
+				  reserveObj.setParkingAreaName(rs.getString("parkingarea_name"));
+				  listPermitType.add(reserveObj);			  }
+			 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
 		
-		ArrayList<ReservationDetails> resultList = new ArrayList<ReservationDetails>();	
+		finally {
+			try {
+				conn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}};
+			return listPermitType;
+		
+	}
+	
+	public static Reservation getReservation(int id) {
 		Statement stmt = null;   
-		Connection conn = null;  	
+		Connection conn = null;  
+		Reservation reservation = new Reservation();
 		try {   
 			conn = SQLConnection.getDBConnection();  
 			stmt = conn.createStatement();
-			ResultSet reservationList = stmt.executeQuery(query);
+			String reservationDetails = " SELECT * from parking WHERE id = '"+id+"'";
+			ResultSet reservationList = stmt.executeQuery(reservationDetails);
 			while(reservationList.next()) {
-				ReservationDetails reservationDetails = new ReservationDetails();
-				int id = reservationList.getInt("id");
-				String username = reservationList.getString("username");
-				String carName  = reservationList.getString("name");
+				int id1 = reservationList.getInt("id");
+				String parkingType = reservationList.getString("parkingtype");
+				String parkingAreaName  = reservationList.getString("parkingarea_name");
 				int capacity  = reservationList.getInt("capacity");
-				String startTimeAsString = reservationList.getTimestamp("start_time").toLocalDateTime().toString();
-				String endTimeAsString = reservationList.getTimestamp("end_time").toLocalDateTime().toString();
-				int hasGps  = reservationList.getInt("hasgps");
-				int hasSirius  = reservationList.getInt("hassirius");
-				int hasOnstar  = reservationList.getInt("hasonstar");
-				double totalPrice = reservationList.getDouble("total_price");
+				int floor = reservationList.getInt("floor");
+				float cart  = reservationList.getFloat("cart");
+				float camera  = reservationList.getFloat("camera");
+			    float history = reservationList.getFloat("history");
+			    
 				
-				reservationDetails.setReservationDetails(id,username, carName, capacity, 
-						startTimeAsString, endTimeAsString, hasGps, hasSirius, hasOnstar,totalPrice);					
+				//set User
+			    reservation.setId(id1);
+			    reservation.setParkingType(parkingType);
+			    reservation.setParkingAreaName(parkingAreaName);
+			    reservation.setCapacity(capacity);
+			    reservation.setFloor(floor);
+			    reservation.setCart(cart);
+			    reservation.setCamera(camera);
+			    reservation.setHistory(history);
 				
-				resultList.add(reservationDetails);
+				
+			
+				
 			}
 			
 			} catch (SQLException e) {
@@ -140,86 +129,84 @@ public class ReservationDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}};
-
-		return resultList;
+		return reservation;
 	}
 	
-	
-	//retrieve a specific RR from DB
-	public static ReservationDetails getReservationById(int resId) {
-			
-			ReservationDetails reservationDetails = new ReservationDetails();
-			Statement stmt = null;   
-			Connection conn = null;  	
-			String query = " SELECT reservation.id as id,username,car.name as name,capacity,start_time,end_time,hassirius,hasgps,hasonstar,total_price"
-					+ " FROM reservation,user,car,payment"
-					+ " WHERE reservation.id="+resId+" AND payment.id=reservation.payment_id AND payment.user_id=user.id AND car.id=reservation.car_id" 
-					+ " AND iscanceled!=1 AND isdeleted !=1 ORDER BY start_time DESC";
-			try {   
-				conn = SQLConnection.getDBConnection();  
-				stmt = conn.createStatement();
-				ResultSet reservationList = stmt.executeQuery(query);
-				while(reservationList.next()) {
-					int id = reservationList.getInt("id");
-					String username = reservationList.getString("username");
-					String carName  = reservationList.getString("name");
-					int capacity  = reservationList.getInt("capacity");
-					String startTimeAsString = reservationList.getTimestamp("start_time").toLocalDateTime().toString();
-					String endTimeAsString = reservationList.getTimestamp("end_time").toLocalDateTime().toString();
-					int hasGps  = reservationList.getInt("hasgps");
-					int hasSirius  = reservationList.getInt("hassirius");
-					int hasOnstar  = reservationList.getInt("hasonstar");
-					double totalPrice = reservationList.getDouble("total_price");
-					
-					reservationDetails.setReservationDetails(id,username, carName, capacity, 
-							startTimeAsString, endTimeAsString, hasGps, hasSirius, hasOnstar,totalPrice);						
-				}
-				
-				} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					conn.close();
-					stmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}};
-
-			return reservationDetails;
-	}
+	public static String addParkingArea(String parkingAreaName)
+	{
+		Statement stmt = null;
+		Connection conn= null;
+		String ParkingArea="";
+		String parkingAreaName1;
 		
-	
-	//customer cancel RR
-	public static void cancelReservation(int resId) {
-		String query = "UPDATE reservation SET iscanceled=1 WHERE id="+resId;
-		removeReservation(query);
-	}
-	//manager delete RR
-	public static void deleteReservation(int resId) {
-		String query = "UPDATE reservation SET isdeleted=1 WHERE id="+resId;
-		removeReservation(query);
-	}
-	
-	//update RR as canceled or deleted in DB
-	private static void removeReservation(String query) {
-		Statement stmt = null;   
-		Connection conn = SQLConnection.getDBConnection();  
-		try {   
-			conn = SQLConnection.getDBConnection();  
-			conn.setAutoCommit(false);   
-			stmt = conn.createStatement();
-			stmt.executeUpdate(query);
-			conn.commit();					 
-		} catch (SQLException sqle) { 
-			sqle.printStackTrace();
-		} finally {
+		Scanner in = new Scanner(System.in);
+		parkingAreaName1 = in.nextLine();
+		try
+		{
+			 conn = SQLConnection.getDBConnection();
+			 stmt =conn.createStatement();
+			  String addParkingAreaQuery = "INSERT into parking (parkingarea_name) VALUE = "+parkingAreaName1;
+			  ResultSet rs = stmt.executeQuery(addParkingAreaQuery);
+			  while(rs.next())
+			  {
+				  ParkingArea = rs.getString("parkingAreaName");
+			  }
+			 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		
+		finally {
 			try {
 				conn.close();
 				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			};
-		}					
-	}	
+			}};
+		return  ParkingArea;
+	}
+	
+	
+	/*public static List<Reservation> getPermitType(int id, String cart)throws SQLException
+	{
+		Statement stmt = null;
+		Connection conn= null;
+		List<Reservation> reservationDetails = new ArrayList<Reservation>();
+		try
+		{
+			 conn = SQLConnection.getDBConnection();
+			 stmt =conn.createStatement();
+			  String reservationDetailsQuery = "SELECT * from parking WHERE id= '"+id+"'";
+			  ResultSet rs = stmt.executeQuery(reservationDetailsQuery);
+			  while(rs.next())
+			  {
+				  Reservation reserveObj = new Reservation();
+				  reserveObj.setId(rs.getInt(id));
+				  reserveObj.setParkingType(rs.getString("parkingtype"));
+				  reserveObj.setParkingAreaName(rs.getString("parkingarea_name"));
+				
+				reserveObj.setCart(rs.getFloat(cart));
+				  reserveObj.set
+				  ParkingPermitType = rs.getString("parkingpermittype");
+			  }
+			 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 
+		
+		finally {
+			try {
+				conn.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}};
+		return  ParkingPermitType;
+	}*/
 }
