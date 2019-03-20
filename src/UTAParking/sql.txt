@@ -29,10 +29,17 @@ DROP TABLE IF EXISTS `parking`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `parking` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+   `name` varchar(15) COLLATE utf8_bin NOT NULL,
+`capacity` tinyint(1) NOT NULL,
+  `floor` tinyint(1) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
+  `cart_rate` decimal(13,2) NOT NULL,
+  `camera_rate` decimal(13,2) NOT NULL,
+  `history_rate` decimal(13,2) NOT NULL,
   `parkingtype` varchar(20) COLLATE utf8_bin NOT NULL,
-  PRIMARY KEY (`id`),
+   PRIMARY KEY (`id`),
+  UNIQUE KEY `idname_UNIQUE` (`name`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ALTER TABLE parking AUTO_INCREMENT=1;
@@ -56,20 +63,20 @@ DROP TABLE IF EXISTS `reservation`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `reservation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `car_id` int(11) NOT NULL,
+  `parking_id` int(11) NOT NULL,
   `payment_id` int(11) NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime NOT NULL,
-  `hasgps` tinyint(1) NOT NULL DEFAULT '0',
-  `hasonstar` tinyint(1) NOT NULL DEFAULT '0',
-  `hassirius` tinyint(1) NOT NULL DEFAULT '0',
+  `hascart` tinyint(1) NOT NULL DEFAULT '0',
+  `hascamera` tinyint(1) NOT NULL DEFAULT '0',
+  `hashistory` tinyint(1) NOT NULL DEFAULT '0',
   `iscanceled` tinyint(1) NOT NULL DEFAULT '0',
   `isdeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `fk_car_idx` (`car_id`),
+  KEY `fk_parking_idx` (`parking_id`),
   KEY `fk_payment_idx` (`payment_id`),
-  CONSTRAINT `fk_car` FOREIGN KEY (`car_id`) REFERENCES `car` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_car` FOREIGN KEY (`parking_id`) REFERENCES `parking` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 ALTER TABLE reservation AUTO_INCREMENT=1;
